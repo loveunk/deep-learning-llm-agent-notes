@@ -18,6 +18,12 @@
 | BAIR Blog | <https://bair.berkeley.edu/blog/feed.xml> | 学术研究、Agent、机器人、多模态 |
 | MIT News AI | <https://news.mit.edu/rss/topic/artificial-intelligence2> | AI 研究、机器人、科学智能 |
 
+### 综合 AI 新闻与解读
+
+| 来源 | RSS / Atom | 主要主题 |
+| --- | --- | --- |
+| AI Weekly | <https://aiweekly.co/feed> | 专家阅读信号、模型、Agent、融资、政策、研究，每周更新三次 |
+
 Anthropic 当前没有稳定官方 RSS，因此自动源暂时使用第三方生成的公开 feed；人工精选时仍应打开 Anthropic 原文确认。
 
 ### Agent、编程智能体与工程实践
