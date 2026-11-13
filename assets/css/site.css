@@ -36,6 +36,29 @@ a:hover {
   text-decoration: underline;
 }
 
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  top: -80px;
+  left: 16px;
+  z-index: 20;
+  padding: 10px 16px;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+}
+
+.skip-link:focus {
+  top: 10px;
+}
+
 .site-header {
   position: sticky;
   top: 0;
@@ -108,6 +131,171 @@ a:hover {
   padding: 5px 0;
   color: var(--muted);
   font-size: 14px;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+
+.section-navigation > summary {
+  margin: 18px 0 12px;
+  font-size: 14px;
+}
+
+.sidebar-search label,
+#site-search label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.search-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.search-controls input {
+  min-width: 0;
+  flex: 1;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  background: var(--bg);
+  font: inherit;
+}
+
+.search-controls button {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sidebar-search .search-controls {
+  flex-wrap: wrap;
+}
+
+.sidebar-search input {
+  flex-basis: 100%;
+}
+
+.page-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.content .page-meta p {
+  margin: 0;
+}
+
+.page-meta > a {
+  white-space: nowrap;
+}
+
+.page-toc {
+  margin-bottom: 22px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--soft);
+  font-size: 14px;
+}
+
+.content .page-toc ol {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  max-height: 340px;
+  overflow: auto;
+}
+
+.page-toc li {
+  margin: 6px 0;
+}
+
+.page-toc .toc-subheading {
+  margin-left: 18px;
+  list-style-type: circle;
+}
+
+.chapter-pagination {
+  display: flex;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.chapter-pagination a {
+  flex: 1;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.chapter-pagination span {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.chapter-pagination__next {
+  text-align: right;
+  margin-left: auto;
+}
+
+.page-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.content .search-status {
+  margin: 20px 0;
+  color: var(--muted);
+}
+
+.search-results {
+  padding-left: 24px;
+}
+
+.search-results li {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.content .search-results h2 {
+  margin: 22px 0 8px;
+  padding: 0;
+  font-size: 22px;
+}
+
+.content .search-results p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.math-source,
+mjx-container[display="true"] {
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .content {
@@ -205,6 +393,14 @@ a:hover {
 }
 
 @media (max-width: 880px) {
+  html {
+    scroll-padding-top: 130px;
+  }
+
+  .site-header {
+    position: static;
+  }
+
   .site-header__inner {
     align-items: flex-start;
     flex-direction: column;
@@ -224,6 +420,22 @@ a:hover {
     padding: 0 0 18px;
     border-right: 0;
     border-bottom: 1px solid var(--line);
+  }
+
+  .sidebar-search .search-controls {
+    flex-wrap: nowrap;
+  }
+
+  .sidebar-search input {
+    flex-basis: auto;
+  }
+
+  .chapter-pagination {
+    flex-direction: column;
+  }
+
+  .chapter-pagination__next {
+    margin-left: 0;
   }
 
   .content h1 {

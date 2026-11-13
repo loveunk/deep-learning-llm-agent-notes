@@ -6,27 +6,30 @@
 
 - [微积分 Calculus](#微积分-calculus)
 	- [Derivative 导数](#derivative-导数)
-		- [基本规则](#基本规则)
-			- [线性法则 (Sum / Subtraction rule)](#线性法则-sum-subtraction-rule)
+		- [导数基本规则](#导数基本规则)
+			- [线性法则 (Sum / Subtraction rule)](#线性法则-sum--subtraction-rule)
 			- [指数法则 (Power rule)](#指数法则-power-rule)
 			- [其他规则](#其他规则)
 		- [乘积法则 (Product rule)](#乘积法则-product-rule)
 		- [链式法则 (Chain rule)](#链式法则-chain-rule)
 	- [偏导数 (Partial Derivative)](#偏导数-partial-derivative)
 		- [定义](#定义)
-	- [Jacobians - vectors of derivatives](#jacobians-vectors-of-derivatives)
-	- [Hessian](#hessian)
-- [Neural Networks](#neural-networks)
-	- [Simple neural networks](#simple-neural-networks)
-	- [Backpropagation](#backpropagation)
-- [泰勒级数 (Taylor series)](#泰勒级数-taylor-series)
+	- [雅可比矩阵 (Jacobians Matrix)](#雅可比矩阵jacobians-matrix)
+		- [直观感受](#直观感受)
+		- [例子1](#例子1)
+		- [例子2](#例子2)
+	- [Hessian Matrix 海森矩阵](#hessian-matrix-海森矩阵)
+		- [Hessian Matrix性质](#hessian-matrix性质)
+	- [幂级数](#幂级数)
+		- [幂级数求导](#幂级数求导)
+	- [泰勒级数 (Taylor series)](#泰勒级数-taylor-series)
+		- [泰勒级数](#泰勒级数)
 	- [多变量泰勒级数 Multivariable Taylor Series](#多变量泰勒级数-multivariable-taylor-series)
-- [约束最大最小值的优化方法](#约束最大最小值的优化方法)
+	- [约束最大最小值的优化方法](#约束最大最小值的优化方法)
 	- [牛顿-拉弗森方法 Newton-Raphson](#牛顿-拉弗森方法-newton-raphson)
-	- [Gradient Descent](#gradient-descent)
 	- [拉格朗日乘数 Lagrange multipliers](#拉格朗日乘数-lagrange-multipliers)
-- [线性回归Linear Regression](#线性回归linear-regression)
-- [非线性回归 Non-linear Regression](#非线性回归-non-linear-regression)
+	- [线性回归Linear Regression](#线性回归linear-regression)
+	- [非线性回归 Non-linear Regression](#非线性回归-non-linear-regression)
 	- [快速下降法 Steepest Descent](#快速下降法-steepest-descent)
 
 <!-- /TOC -->
@@ -248,7 +251,7 @@ H<sub>F</sub>(x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>)_，或者 (<sup>
 
 当函数有多变量时，就需要用到多变量泰勒级数，一个例子：
 
-![](img\multivariate-taylor.png)
+![](img/multivariate-taylor.png)
 
 多变量泰勒级数的公式：
 

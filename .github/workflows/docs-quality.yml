@@ -1,0 +1,39 @@
+name: Documentation quality
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check local source links and offline regression tests
+        run: |
+          python3 tools/check_local_links.py
+          python3 -m unittest discover -s tests -v
+      - name: Check browser script syntax
+        run: |
+          for script in assets/js/*.js; do node --check "$script"; done
+          node --test tests/test_site_search.cjs
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - name: Build and validate published paths and anchors
+        run: |
+          ruby tests/test_inline_math.rb
+          bundle exec jekyll build --baseurl /deep-learning-llm-agent-notes
+          python3 tools/check_site.py --site _site --baseurl /deep-learning-llm-agent-notes

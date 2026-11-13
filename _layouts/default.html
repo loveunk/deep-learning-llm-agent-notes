@@ -3,11 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}</title>
+  <title>{% if page.title and page.title != site.title %}{{ page.title | escape }} - {% endif %}{{ site.title | escape }}</title>
   {% seo title=false %}
   <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
+  <script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/js/math.js' | relative_url }}" defer></script>
+  {% if page.search_page %}<script src="{{ '/assets/js/search.js' | relative_url }}" defer></script>{% endif %}
 </head>
 <body>
+  <a class="skip-link" href="#main-content">跳到正文</a>
   <header class="site-header">
     <div class="site-header__inner">
       <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
@@ -15,42 +19,78 @@
         <a href="{{ '/' | relative_url }}">首页</a>
         <a href="{{ '/llm/' | relative_url }}">LLM 与 Agent</a>
         <a href="{{ '/reading/' | relative_url }}">技术文章</a>
-        <a href="{{ '/deep-learning/' | relative_url }}">深度学习</a>
-        <a href="{{ '/machine-learning/' | relative_url }}">机器学习</a>
+        <a href="{{ '/search.html' | relative_url }}">搜索</a>
         <a href="https://github.com/{{ site.repository }}">GitHub</a>
       </nav>
     </div>
   </header>
-
   <div class="page-shell">
     <aside class="sidebar" aria-label="章节导航">
-      <nav>
-        <p class="sidebar__title">学习路径</p>
-        <a href="{{ '/' | relative_url }}#30-天新人路线">30 天新人路线</a>
-        <a href="{{ '/' | relative_url }}#llm-工程师路线">LLM 工程师路线</a>
-        <a href="{{ '/' | relative_url }}#agent-工程路线">Agent 工程路线</a>
-        <a href="{{ '/' | relative_url }}#经典深度学习补课路线">经典深度学习补课</a>
-
-        <p class="sidebar__title">核心章节</p>
-        <a href="{{ '/llm/' | relative_url }}">LLM 学习路径</a>
-        <a href="{{ '/llm/rag.html' | relative_url }}">RAG</a>
-        <a href="{{ '/llm/agent.html' | relative_url }}">AI Agent</a>
-        <a href="{{ '/llm/coding-agents.html' | relative_url }}">AI 编程智能体</a>
-        <a href="{{ '/llm/harness-engineering.html' | relative_url }}">Harness Engineering</a>
-        <a href="{{ '/llm/loop-engineering.html' | relative_url }}">Loop Engineering</a>
-
-        <p class="sidebar__title">技术文章阅读</p>
-        <a href="{{ '/reading/' | relative_url }}">阅读总览</a>
-        <a href="{{ '/reading/2026/06.html' | relative_url }}">2026 年 6 月精选</a>
-        <a href="{{ '/reading/topics/agent.html' | relative_url }}">Agent</a>
-        <a href="{{ '/reading/topics/coding-agents.html' | relative_url }}">Coding Agents</a>
-        <a href="{{ '/reading/topics/llm-engineering.html' | relative_url }}">LLM 应用工程</a>
-        <a href="{{ '/reading/topics/rag.html' | relative_url }}">RAG</a>
-      </nav>
+      <form class="sidebar-search" action="{{ '/search.html' | relative_url }}" method="get" role="search">
+        <label for="sidebar-query">搜索全部笔记</label>
+        <div class="search-controls">
+          <input id="sidebar-query" name="q" type="search" placeholder="如：检索、工具调用" maxlength="120">
+          <button type="submit">搜索</button>
+        </div>
+      </form>
+      <details class="section-navigation" open>
+        <summary>学习与阅读导航</summary>
+        <nav>
+          <p class="sidebar__title">学习路径</p>
+          <a href="{{ '/' | relative_url }}">路线总览</a>
+          <a href="{{ '/llm/' | relative_url }}">LLM 与 Agent 主线</a>
+          <a href="{{ '/deep-learning/' | relative_url }}">深度学习基础</a>
+          <a href="{{ '/machine-learning/' | relative_url }}">机器学习基础</a>
+          <p class="sidebar__title">核心章节</p>
+          <a href="{{ '/llm/rag.html' | relative_url }}">RAG</a>
+          <a href="{{ '/llm/rag-evaluation.html' | relative_url }}">RAG 评估</a>
+          <a href="{{ '/llm/agent.html' | relative_url }}">AI Agent</a>
+          <a href="{{ '/llm/coding-agents.html' | relative_url }}">AI 编程智能体</a>
+          <a href="{{ '/llm/harness-engineering.html' | relative_url }}">Harness Engineering</a>
+          <a href="{{ '/llm/loop-engineering.html' | relative_url }}">Loop Engineering</a>
+          <p class="sidebar__title">技术文章阅读</p>
+          <a href="{{ '/reading/' | relative_url }}">阅读总览</a>
+          <a href="{{ '/reading/archive.html' | relative_url }}">全部精选归档</a>
+          <a href="{{ '/reading/topics/agent.html' | relative_url }}">Agent</a>
+          <a href="{{ '/reading/topics/coding-agents.html' | relative_url }}">Coding Agents</a>
+          <a href="{{ '/reading/topics/llm-engineering.html' | relative_url }}">LLM 应用工程</a>
+          <a href="{{ '/reading/topics/rag.html' | relative_url }}">RAG</a>
+        </nav>
+      </details>
     </aside>
-
-    <main class="content">
-      {{ content }}
+    <main id="main-content" class="content" tabindex="-1">
+      {% unless page.show_maintenance == false %}
+      <div class="page-meta">
+        <p>维护状态：{{ page.maintenance_status | escape }}{% if page.reviewed_at %}<br>内容复核：{{ page.reviewed_at | date: '%Y-%m-%d' }}{% endif %}</p>
+        <a href="https://github.com/{{ site.repository }}/edit/{{ site.repository_branch }}/{{ page.path }}">编辑此页</a>
+      </div>
+      {% endunless %}
+      {% unless page.toc == false %}
+      <details class="page-toc" data-toc hidden>
+        <summary>本文目录</summary>
+        <nav aria-label="本文目录"><ol data-toc-list></ol></nav>
+      </details>
+      {% endunless %}
+      <article data-article>{{ content }}</article>
+      {% assign sequence = site.data.navigation.main_sequence %}
+      {% for chapter in sequence %}
+        {% if chapter.path == page.path %}
+          {% assign previous_index = forloop.index0 | minus: 1 %}
+          {% assign next_index = forloop.index0 | plus: 1 %}
+          <nav class="chapter-pagination" aria-label="主线章节顺序">
+            {% unless forloop.first %}{% assign previous = sequence[previous_index] %}
+            <a href="{{ previous.url | relative_url }}"><span>上一篇</span>{{ previous.title }}</a>
+            {% endunless %}
+            {% unless forloop.last %}{% assign next = sequence[next_index] %}
+            <a class="chapter-pagination__next" href="{{ next.url | relative_url }}"><span>下一篇</span>{{ next.title }}</a>
+            {% endunless %}
+          </nav>
+        {% endif %}
+      {% endfor %}
+      <footer class="page-footer">
+        <a href="{{ '/llm/' | relative_url }}">返回学习主线</a>
+        <a href="https://github.com/{{ site.repository }}/issues/new/choose">反馈错误或建议</a>
+      </footer>
     </main>
   </div>
 </body>

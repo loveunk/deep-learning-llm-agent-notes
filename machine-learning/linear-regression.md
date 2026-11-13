@@ -18,7 +18,7 @@
 	- [正规方程 Normal Equations](#正规方程-normal-equations)
 		- [对比梯度下降和正规方程](#对比梯度下降和正规方程)
 			- [正规方程及不可逆性](#正规方程及不可逆性)
-	- [Jupter Notebook编程练习](#jupter-notebook编程练习)
+	- [Jupyter Notebook编程练习](#jupyter-notebook编程练习)
 
 <!-- /TOC -->
 ## 单变量线性回归 (Linear Regression with One Variable)

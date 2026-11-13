@@ -1,6 +1,10 @@
 # 从零实现 RAG
 
+> 前置：Python、[Embedding](embeddings.md)与[RAG 概念](rag.md)。审校日期：2026-11-13；已静态检查流程，并通过文本分块纯函数测试；embedding 下载和模型 API 调用尚未实跑。
+
 本章用最少组件实现一个 RAG。目标不是替代 LlamaIndex 或 LangChain，而是理解 RAG 的关键数据流。
+
+运行前需准备 Python 3.9+、`numpy`、`sentence-transformers`、`openai` 及其兼容依赖；首次使用会下载 embedding 模型。下面代码块按顺序共享变量，最后一步还需配置 `OPENAI_API_KEY`，并将 `your-model` 替换为账户可用、支持 Responses API 的模型。API 调用可能计费。本章没有锁定依赖版本，外部模型调用尚未实跑，不能视为已验证的部署示例。
 
 ## 最小架构
 
@@ -37,11 +41,17 @@ documents = [
 
 ```python
 def split_text(text: str, chunk_size: int = 120, overlap: int = 20) -> list[str]:
+    if (isinstance(chunk_size, bool) or not isinstance(chunk_size, int)
+            or isinstance(overlap, bool) or not isinstance(overlap, int)
+            or not 0 <= overlap < chunk_size):
+        raise ValueError("需要整数参数，且 0 <= overlap < chunk_size")
     chunks = []
     start = 0
     while start < len(text):
         end = start + chunk_size
         chunks.append(text[start:end])
+        if end >= len(text):
+            break
         start = end - overlap
     return chunks
 
@@ -56,6 +66,8 @@ for doc in documents:
             "text": text
         })
 ```
+
+这里按 Python 字符切分，不是按模型 token 切分；中文、英文和代码的 token 数不同。函数会校验 overlap，避免步长为零或负数导致循环不终止。
 
 ## Step 3: 生成向量
 

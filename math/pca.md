@@ -5,10 +5,10 @@ PCA是一种数据线性降维的方法，在学习PCA之前，先回顾一些�
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [主成分分析 - PCA (Principal Component Analysis)](#主成分分析-pca-principal-component-analysis)
-	- [方差和协方差 Varianes & Covariances](#方差和协方差-varianes-covariances)
+- [主成分分析 - PCA (Principal Component Analysis)](#主成分分析---pca-principal-component-analysis)
+	- [方差和协方差 Varianes & Covariances](#方差和协方差-varianes--covariances)
 		- [方差 Variance](#方差-variance)
-		- [Covariance 协方差](#covariance-协方差)
+		- [协方差 Covariance](#协方差-covariance)
 		- [Rules 方差规则](#rules-方差规则)
 	- [积 Product](#积-product)
 		- [点积 Dot product](#点积-dot-product)

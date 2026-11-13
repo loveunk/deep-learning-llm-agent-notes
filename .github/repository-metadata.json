@@ -1,0 +1,5 @@
+{
+  "description": "面向有 Python 基础的开发者：大模型、RAG 与 Agent 的设计、评估和失败排查；含机器学习与深度学习基础笔记。",
+  "homepage": "https://loveunk.github.io/deep-learning-llm-agent-notes/",
+  "topics": ["llm", "rag", "ai-agents", "evaluation", "machine-learning", "deep-learning", "chinese", "learning-resources"]
+}

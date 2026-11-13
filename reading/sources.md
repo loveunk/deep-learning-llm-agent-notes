@@ -24,6 +24,8 @@
 | --- | --- | --- |
 | AI Weekly | <https://aiweekly.co/feed> | 专家阅读信号、模型、Agent、融资、政策、研究，每周更新三次 |
 
+AI Weekly 条目保留自远端来源目录；当前 `sources.json` 尚未启用该 feed，暂作人工观察。表中更新频率为原条目描述，本次没有重新验证。其线索仍需回溯一手原文。
+
 Anthropic 当前没有稳定官方 RSS，因此自动源暂时使用第三方生成的公开 feed；人工精选时仍应打开 Anthropic 原文确认。
 
 ### Agent、编程智能体与工程实践

@@ -1,0 +1,55 @@
+main_sequence:
+  - title: LLM 入门
+    path: llm/intro.md
+    url: /llm/intro.html
+  - title: API 与模型选型
+    path: llm/api-and-models.md
+    url: /llm/api-and-models.html
+  - title: Prompt 与上下文工程
+    path: llm/prompting.md
+    url: /llm/prompting.html
+  - title: Transformer
+    path: llm/transformer.md
+    url: /llm/transformer.html
+  - title: Embedding 与向量检索
+    path: llm/embeddings.md
+    url: /llm/embeddings.html
+  - title: RAG
+    path: llm/rag.md
+    url: /llm/rag.html
+  - title: 从零实现 RAG
+    path: llm/rag-from-scratch.md
+    url: /llm/rag-from-scratch.html
+  - title: RAG 评估
+    path: llm/rag-evaluation.md
+    url: /llm/rag-evaluation.html
+  - title: 微调方法
+    path: llm/fine-tuning.md
+    url: /llm/fine-tuning.html
+  - title: AI Agent
+    path: llm/agent.md
+    url: /llm/agent.html
+  - title: 工具调用
+    path: llm/agent-tools.md
+    url: /llm/agent-tools.html
+  - title: Agent 工作流
+    path: llm/agent-workflows.md
+    url: /llm/agent-workflows.html
+  - title: Agent 生产化
+    path: llm/agent-production.md
+    url: /llm/agent-production.html
+  - title: AI 编程智能体
+    path: llm/coding-agents.md
+    url: /llm/coding-agents.html
+  - title: Agent 记忆与上下文
+    path: llm/agent-memory-context.md
+    url: /llm/agent-memory-context.html
+  - title: MCP
+    path: llm/mcp.md
+    url: /llm/mcp.html
+  - title: Harness Engineering
+    path: llm/harness-engineering.md
+    url: /llm/harness-engineering.html
+  - title: Loop Engineering
+    path: llm/loop-engineering.md
+    url: /llm/loop-engineering.html

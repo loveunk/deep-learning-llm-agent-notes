@@ -1,0 +1,21 @@
+---
+layout: default
+title: 搜索笔记
+render_with_liquid: true
+search_page: true
+search: false
+toc: false
+show_maintenance: false
+---
+<h1>搜索笔记</h1>
+<p>搜索中文或英文关键词；多个关键词用空格分开。范围包含学习笔记与已发布的精选文章。</p>
+<form id="site-search" action="{{ '/search.html' | relative_url }}" method="get" role="search" data-index-url="{{ '/search.json' | relative_url }}">
+  <label for="search-query">关键词</label>
+  <div class="search-controls">
+    <input id="search-query" name="q" type="search" placeholder="如：向量检索、Agent 权限" maxlength="120" aria-describedby="search-status">
+    <button type="submit">搜索</button>
+  </div>
+</form>
+<p id="search-status" class="search-status" role="status" aria-live="polite">输入关键词开始搜索。</p>
+<ol id="search-results" class="search-results"></ol>
+<noscript><p>站内搜索需要 JavaScript。你也可以使用<a href="https://github.com/{{ site.repository }}/search">GitHub 仓库搜索</a>或<a href="{{ '/llm/' | relative_url }}">学习目录</a>。</p></noscript>

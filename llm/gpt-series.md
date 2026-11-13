@@ -22,7 +22,7 @@ GPT 系列的核心意义不在某一个模型名，而在于验证了“自回�
 
 ## Decoder-only 为什么适合生成
 
-Decoder-only 模型使用 causal mask，只能看到当前位置之前的 token，因此天然适合“预测下一个 token”。
+Decoder-only 模型使用 causal mask，每个位置只能关注自身及之前的 token，不能看到之后的 token，因此适合“预测下一个 token”。
 
 ```text
 tokens:      我   喜   欢   机器   学习

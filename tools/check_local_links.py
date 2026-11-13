@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -22,7 +23,7 @@ def iter_markdown_files() -> list[Path]:
     return sorted(
         path
         for path in ROOT.rglob("*.md")
-        if ".git" not in path.parts and "node_modules" not in path.parts
+        if not {".git", "node_modules", "_site", "vendor", ".bundle", ".jekyll-cache"}.intersection(path.parts)
     )
 
 
@@ -49,6 +50,8 @@ def main() -> int:
 
     for path in iter_markdown_files():
         text = path.read_text(encoding="utf-8", errors="ignore")
+        # Ignore code fences but retain line numbers for actionable reports.
+        text = re.sub(r"(?ms)^(`{3,}|~{3,})[^\n]*\n.*?^\1[^\n]*$", lambda m: "\n" * m.group().count("\n"), text)
         for match in LINK_RE.finditer(text):
             target = normalize_target(match.group(1))
             if target is None:
@@ -59,13 +62,24 @@ def main() -> int:
                 line = text.count("\n", 0, match.start()) + 1
                 missing.append((path.relative_to(ROOT), line, match.group(1).strip()))
 
+        class Resources(HTMLParser):
+            def handle_starttag(self, tag, attrs):
+                for key, raw in attrs:
+                    if key not in {"src", "href"} or not raw:
+                        continue
+                    target = normalize_target(raw)
+                    if target is not None and not (path.parent / target).resolve().exists():
+                        missing.append((path.relative_to(ROOT), self.getpos()[0], raw))
+
+        Resources().feed(text)
+
     if missing:
         print(f"Missing local links: {len(missing)}")
         for path, line, target in missing:
             print(f"{path}:{line} -> {target}")
         return 1
 
-    print("All local Markdown links are valid.")
+    print("All local Markdown/HTML targets exist. Check generated-site anchors with tools/check_site.py.")
     return 0
 
 

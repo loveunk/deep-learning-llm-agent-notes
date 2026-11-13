@@ -1,5 +1,7 @@
 # CLIP (Contrastive Language-Image Pre-training)
 
+> 前置：向量相似度与 Python 基础。适用：经典图文对齐入门。审校日期：2026-11-13；仅静态审校，示例未实跑；需兼容的 PyTorch、Transformers、Pillow、scikit-learn 与自行准备的 `cat.jpg`。
+
 > **图文理解的基石**
 
 ---
@@ -60,6 +62,8 @@ for text, prob in zip(texts, probs):
 
 ### 图文检索
 
+此片段沿用上文的 `model`、`inputs`，按 CPU 张量演示；若迁移至 GPU，转换 NumPy 前需先 `.cpu()`。上文 softmax 得分依赖候选文本集合，不是经过校准的分类正确率。
+
 ```python
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -70,8 +74,8 @@ text_features = model.get_text_features(inputs.input_ids)
 
 # 计算相似度
 similarity = cosine_similarity(
-    image_features.detach().numpy(),
-    text_features.detach().numpy()
+    image_features.detach().cpu().numpy(),
+    text_features.detach().cpu().numpy()
 )
 ```
 

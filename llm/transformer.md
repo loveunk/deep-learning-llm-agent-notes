@@ -1,5 +1,7 @@
 # Transformer 架构
 
+> 前置：向量、矩阵乘法与 Python 基础。适用：架构概览与张量形状入门。审校日期：2026-11-13；仅静态核对正文和代码结构，PyTorch 示例未实跑，本文不覆盖完整模型训练。
+
 Transformer 是现代 LLM 的基础架构。你不需要一开始推完所有公式，但必须理解它为什么能处理序列、为什么注意力重要、以及 encoder-only、decoder-only、encoder-decoder 的区别。
 
 ## Transformer 解决的问题
@@ -29,7 +31,7 @@ attention = softmax(score) V
 
 ## Multi-head attention
 
-单个 attention head 只能从一种角度看关系。Multi-head attention 并行学习多种关系：
+Multi-head attention 在多个投影子空间中计算注意力。以下是理解不同关系的直观例子，不代表每个 head 必然固定承担其中一种功能：
 
 - 主谓关系。
 - 指代关系。

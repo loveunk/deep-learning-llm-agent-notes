@@ -1,16 +1,18 @@
-# 多模态模型 (Multimodal)
+# 多模态模型：经典架构与入门示例
 
-> **从单一模态到多模态，AI 正在迈向真正理解世界。**
+> 前置：Python 与 [Transformer](../llm/transformer.md) 基础。审校日期：2026-11-13；已静态审校经典架构与示例边界，未下载模型或执行推理；学习时长和硬件表现不属于实测结果。
+
+本目录用 CLIP、BLIP 和 LLaVA 解释图文对齐、连接器与视觉指令微调。它是经典架构入门，不是当前模型排行榜。部署选型需另查具体版本的官方模型卡、许可、硬件要求与自己的任务评估。
 
 ---
 
 ## 🎯 学习目标
 
-用 **2 小时** 理解：
+建议先用 **2 小时** 建立概览，模型下载和实验耗时另计：
 1. 什么是多模态模型
 2. 主流模型和架构
 3. 如何使用多模态模型
-4. 最新进展和应用
+4. 经典应用方向与选型时需要核实的条件
 
 ---
 
@@ -47,6 +49,8 @@
 
 ### 实战：用 CLIP 做图文检索
 
+代码片段未实跑。需 PyTorch、Transformers、Pillow 与本地 `cat.jpg`；首次运行会下载模型。以下计算是在给定候选文本中的相对得分，并不是校准后的现实正确率。
+
 ```python
 from transformers import CLIPProcessor, CLIPModel
 import torch
@@ -71,14 +75,14 @@ probs = logits_per_image.softmax(dim=1).tolist()[0]
 # 结果
 for text, prob in zip(texts, probs):
     print(f"{text}: {prob:.2%}")
-# Output: a cat: 95%, a dog: 3%, a car: 2%
+# 输出取决于图片和候选文本；此处不预填未经测量的概率。
 ```
 
 ---
 
 ## 📖 深度模式（2 小时）
 
-### 主流多模态模型
+### 经典多模态模型
 
 #### 1. CLIP (Contrastive Language-Image Pre-training)
 
@@ -137,7 +141,7 @@ for text, prob in zip(texts, probs):
 **特点：**
 - 强大的多模态能力
 - 理解复杂场景
-- 绘图和标注
+- 可解释输入图片；具体输出能力取决于所用模型与接口
 
 #### 5. 其他重要模型
 
@@ -164,16 +168,16 @@ for text, prob in zip(texts, probs):
 ### BLIP-2 架构（2023）
 
 ```
-图像 → 冻结的 ViT → Q-Former → LLM
+图像 → 冻结的 ViT → Q-Former → 可训练投影 → 冻结的 LLM
 文本 → 冻结的 LLM
 
-只训练 Q-Former（轻量级适配器）
+训练 Q-Former 及连接投影，冻结图像编码器与 LLM
 ```
 
 ### LLaVA 架构
 
 ```
-图像 → CLIP ViT → 线性投影 → LLM Token
+图像 → CLIP ViT → 投影连接器 → LLM 输入嵌入
 文本 → LLM Token
 
 拼接后输入 LLM
@@ -181,9 +185,11 @@ for text, prob in zip(texts, probs):
 
 ---
 
-## 实战：构建多模态应用
+## 调用片段：理解多模态输入输出
 
-### 项目 1: 图文问答
+下面展示独立调用片段，不包含完整项目。需自行准备图片、兼容依赖与硬件；模型/API 的版本可用性和效果未在本仓库实跑验证。图像生成片段额外依赖 `diffusers`、`transformers`、`accelerate` 及支持相应精度的 CUDA 环境。
+
+### 片段 1: 图文问答
 
 ```python
 from transformers import BlipProcessor, BlipForQuestionAnswering
@@ -209,7 +215,7 @@ answer = processor.decode(out[0], skip_special_tokens=True)
 print(answer)
 ```
 
-### 项目 2: 图像生成
+### 片段 2: 图像生成
 
 ```python
 import torch
@@ -229,10 +235,11 @@ image = pipe(prompt).images[0]
 image.save("cat.png")
 ```
 
-### 项目 3: 图像描述
+### 片段 3: 图像描述
 
 ```python
 from transformers import BlipProcessor, BlipForConditionalGeneration
+from PIL import Image
 
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
@@ -295,7 +302,9 @@ print(caption)
 
 ---
 
-## 最新进展 (2024-2025)
+## 应用方向举例（历史模型）
+
+以下名称用于理解任务类型，不代表 2026 年最新方案，也不是经过本仓库比较后的选型推荐。
 
 ### 1. 视频多模态
 
@@ -321,15 +330,17 @@ print(caption)
 
 ---
 
-## 如何选择模型？
+## 从任务找到经典学习入口
 
-| 任务 | 推荐模型 |
+| 任务 | 经典示例（非当前推荐排名） |
 |------|----------|
 | **图文检索** | CLIP, BLIP |
 | **图像理解** | LLaVA, GPT-4V |
 | **图像生成** | Stable Diffusion, DALL·E |
 | **视频理解** | Video-LLaVA, InternVideo |
 | **音频理解** | Whisper |
+
+实际选型时，先固定任务样例，再核查具体 checkpoint/API 版本、支持的输入输出模态、许可、上下文或分辨率限制、硬件/费用，并比较质量、延迟与失败案例。本文不维护完整的最新模型清单。
 
 ---
 

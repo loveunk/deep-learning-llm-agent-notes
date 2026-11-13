@@ -43,7 +43,7 @@ instructions + context + examples + user input -> model output
 
 ## 第一个 API 调用
 
-托管 API 的优势是快速验证想法。示例：
+托管 API 的优势是快速验证想法。以下为未实跑的调用片段：需安装兼容的 `openai` SDK，配置 `OPENAI_API_KEY`，并把 `your-model` 替换为账户可用且支持 Responses API 的模型；实际调用可能计费。
 
 ```python
 from openai import OpenAI

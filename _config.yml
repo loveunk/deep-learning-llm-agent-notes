@@ -1,12 +1,14 @@
-title: 深度学习与大模型学习路径
-description: 面向中文学习者的机器学习、深度学习、大语言模型、RAG 和 Agent 学习路径。
+title: 大模型与 Agent 工程笔记
+description: 面向有 Python 基础的开发者：大模型、RAG 与 Agent 的设计、评估和失败排查；含机器学习与深度学习基础笔记。
 lang: zh-CN
 repository: loveunk/deep-learning-llm-agent-notes
+repository_branch: master
 
 markdown: kramdown
 kramdown:
   input: GFM
   syntax_highlighter: rouge
+  math_engine: mathjax
 
 plugins:
   - jekyll-optional-front-matter
@@ -41,11 +43,38 @@ defaults:
     values:
       layout: default
       render_with_liquid: false
+      maintenance_status: 学习笔记；请结合原始资料核对结论
+  - scope:
+      path: "llm"
+    values:
+      maintenance_status: 工程笔记；示例尚未统一运行验收
+  - scope:
+      path: "reading"
+    values:
+      maintenance_status: 人工精选归档；以各期原始日期为准
+  - scope:
+      path: "math"
+    values:
+      maintenance_status: 历史基础笔记；持续接受纠错
+      math: true
+  - scope:
+      path: "machine-learning"
+    values:
+      math: true
+  - scope:
+      path: "tensorflow"
+    values:
+      maintenance_status: 历史学习材料；接口与依赖需按当前环境复核
+  - scope:
+      path: "pytorch"
+    values:
+      maintenance_status: 历史学习材料；接口与依赖需按当前环境复核
 
 exclude:
   - Gemfile
   - Gemfile.lock
   - tools
+  - tests
   - vendor
   - node_modules
   - .github

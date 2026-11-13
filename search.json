@@ -1,0 +1,18 @@
+---
+layout: null
+render_with_liquid: true
+search: false
+---
+[
+{%- assign first_entry = true -%}
+{%- for entry in site.pages -%}
+  {%- assign extension = entry.path | split: '.' | last -%}
+  {%- assign searchable_content = entry.content | strip -%}
+  {%- if extension == 'md' and entry.search != false and searchable_content != '' -%}
+    {%- unless first_entry -%},{%- endunless -%}
+    {%- assign first_entry = false -%}
+    {%- assign fallback_title = entry.content | newline_to_br | split: '<br />' | first | remove_first: '# ' | strip -%}
+    {"title":{{ entry.title | default: fallback_title | default: entry.name | jsonify }},"url":{{ entry.url | relative_url | jsonify }},"text":{{ entry.content | markdownify | strip_html | normalize_whitespace | jsonify }}}
+  {%- endif -%}
+{%- endfor -%}
+]

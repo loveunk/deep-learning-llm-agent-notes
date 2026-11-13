@@ -1,0 +1,20 @@
+---
+layout: default
+title: 技术文章精选归档
+render_with_liquid: true
+search: false
+toc: false
+---
+<h1>技术文章精选归档</h1>
+<p>按原始发布月份整理人工精选。历史条目保留当时的判断；不代表相关工具和接口已按当前版本重新验证。</p>
+<ul class="reading-archive">
+{% assign ordered_pages = site.pages | sort: 'path' | reverse %}
+{% for entry in ordered_pages %}
+  {% assign parts = entry.path | split: '/' %}
+  {% assign year_prefix = parts[1] | slice: 0, 2 %}
+  {% if parts[0] == 'reading' and year_prefix == '20' and parts.size == 3 %}
+    <li><a href="{{ entry.url | relative_url }}">{{ parts[1] }} 年 {{ parts[2] | split: '.' | first }} 月精选</a></li>
+  {% endif %}
+{% endfor %}
+</ul>
+<p><a href="{{ '/reading/' | relative_url }}">查看选文标准与主题索引</a></p>

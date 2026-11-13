@@ -1,9 +1,18 @@
-name: Collect reading candidates
+name: Collect weekly reading candidates
 
 on:
   schedule:
-    - cron: "30 1 * * *"
+    - cron: "30 1 * * 1"
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "Create this week's candidate issue (default: preview artifacts only)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: reading-candidates
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -11,7 +20,9 @@ permissions:
 
 jobs:
   collect:
+    if: github.repository == 'loveunk/deep-learning-llm-agent-notes'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,38 +32,68 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Test candidate deduplication and publication decisions
+        run: python3 -m unittest discover -s tests -p 'test_reading*.py' -v
+
+      - name: Read complete issue history (open and closed)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --paginate --slurp \
+            "repos/$GITHUB_REPOSITORY/issues?state=all&per_page=100" \
+            > issue-history.json
+
       - name: Collect candidates
         run: |
           python3 tools/collect_reading_candidates.py \
             --sources reading/sources.json \
             --since-days 7 \
-            --max-items 24 \
+            --max-items 12 \
             --max-per-source 2 \
             --min-score 4 \
             --timeout 8 \
             --workers 8 \
+            --history issue-history.json \
+            --require-history \
+            --metadata-output reading-candidates.json \
+            --cleanup-plan reading-cleanup-plan.json \
             --output reading-candidates.md
 
-      - name: Check if candidates exist
-        id: candidates
-        run: |
-          if grep -q "No matching candidates found." reading-candidates.md; then
-            echo "has_candidates=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_candidates=true" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Save review artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reading-candidates-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            reading-candidates.md
+            reading-candidates.json
+            reading-cleanup-plan.json
+          if-no-files-found: warn
 
-      - name: Create daily candidate issue
-        if: steps.candidates.outputs.has_candidates == 'true'
+      - name: Create at most one weekly issue without editing existing reviews
+        if: github.event_name == 'schedule' || inputs.publish == true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          title="Reading candidates $(date -u +%F)"
-          existing="$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')"
-          if [ -n "$existing" ]; then
-            echo "Issue already exists: #$existing"
-            exit 0
-          fi
-          gh issue create \
-            --title "$title" \
-            --body-file reading-candidates.md
+          # Re-read after collection; a maintainer may have created the issue meanwhile.
+          gh api --paginate --slurp \
+            "repos/$GITHUB_REPOSITORY/issues?state=all&per_page=100" \
+            > issue-history-latest.json
+          python3 - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+          from tools.collect_reading_candidates import existing_week_issues, load_history
+
+          result = json.loads(Path('reading-candidates.json').read_text())
+          if not result['should_create']:
+              print('No publication:', result['reason'])
+              raise SystemExit(0)
+          history = load_history('issue-history-latest.json')
+          existing = existing_week_issues(history, result['week'])
+          if existing:
+              print('Weekly issue already exists; preserving body and comments:', existing)
+              raise SystemExit(0)
+          subprocess.run(['gh', 'issue', 'create', '--title', result['title'],
+                          '--body-file', 'reading-candidates.md'], check=True)
+          PY

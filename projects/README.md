@@ -1,6 +1,8 @@
-# 项目实战
+# 练习选题与实践方法
 
-> **理论结合实践，从学习者到开发者**
+> 适用：已有 Python 与基本建模概念的学习者。审校日期：2026-11-13；已静态审校任务表述、指标与代码前置条件，未实现或实跑完整项目。
+
+本页提供可自行选择的练习方向和开发方法，**不包含已经交付或验证的完整项目**。表中的周期与难度只是规划参考，取决于个人基础、数据和硬件。LLM 学习可先从 [RAG 流程片段](../llm/rag-from-scratch.md) 与 [评估指标](../llm/rag-evaluation.md) 开始。
 
 ---
 
@@ -16,7 +18,7 @@
 
 ---
 
-## 📋 推荐项目
+## 📋 练习方向
 
 ### 新人友好（1-2 周）
 
@@ -54,20 +56,19 @@
 
 例子：
 - 问题：预测房价
-- 目标：预测准确率 > 80%
-- 指标：MSE, MAE, R²
+- 目标：在固定测试集上，使 MAE 低于训练集房价中位数预测基线；具体目标按业务误差容忍度确定
+- 指标：MAE、RMSE、R²，并注明房价单位；回归任务不能直接使用未定义的“准确率 > 80%”
 
 ### 2. 收集数据
 
-```python
-# 数据来源
-- 公开数据集（Kaggle, UCI）
-- 爬虫获取
-- 自己标注
-- 合成数据
-```
+- 公开数据集（Kaggle、UCI，先核查许可与字段含义）。
+- 经过授权的自有或公开数据采集。
+- 自己标注。
+- 合成数据（单独标记来源，并用真实数据验证泛化）。
 
 ### 3. 数据探索
+
+以下为流程片段，不能独立运行：`df` 需先加载为清洗前的数据表，省略号需替换成具体列名。后续 `X`、`y` 也需按任务定义；这些步骤未在本仓库以完整数据集实跑。
 
 ```python
 import pandas as pd
@@ -98,13 +99,17 @@ df.plot.scatter(...)
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 
 model = LinearRegression()
 model.fit(X_train, y_train)
 
 y_pred = model.predict(X_test)
 ```
+
+这只是独立同分布数据的随机划分示意。时间序列或同一实体的多条记录应按时间或实体分组切分；预处理只能在训练集上拟合，防止测试信息泄漏。
 
 ### 6. 评估优化
 

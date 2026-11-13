@@ -8,7 +8,7 @@
 	- [小批量梯度下降 Mini-Batch Gradient Descent](#小批量梯度下降-mini-batch-gradient-descent)
 	- [随机梯度下降收敛](#随机梯度下降收敛)
 	- [在线学习 Online Learning](#在线学习-online-learning)
-	- [MapReduce和数据并行](#MapReduce和数据并行)
+	- [MapReduce和数据并行](#mapreduce和数据并行)
 
 <!-- /TOC -->
 ## 大型数据集的学习

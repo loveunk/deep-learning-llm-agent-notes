@@ -1,5 +1,7 @@
 # 线性代数 Linear Algebra
 
+> 前置：中学代数与基本向量运算。审校日期：2026-11-13；本次静态核对投影、基变换条件、行列式与正交化等正文公式，未对历史图片逐张复核，也未实跑 NumPy 示例。
+
 这一章节总结了线性代数的一些基础知识，包括向量、矩阵及其属性和计算方法。
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
@@ -17,7 +19,7 @@
     - [Linear independent 线性无关](#linear-independent-线性无关)
   - [Matrices 矩阵](#matrices-矩阵)
     - [Transformation 矩阵变换](#transformation-矩阵变换)
-      - [矩阵与旋转角度 _θ_ 之间的关系](#矩阵与旋转角度-之间的关系)
+      - [矩阵与旋转角度 _θ_ 之间的关系](#矩阵与旋转角度-θ-之间的关系)
     - [矩阵秩 Matrix Rank](#矩阵秩-matrix-rank)
     - [逆矩阵 Matrix inverse](#逆矩阵-matrix-inverse)
       - [高斯消元法到找到逆矩阵](#高斯消元法到找到逆矩阵)
@@ -28,7 +30,7 @@
     - [格拉姆-施密特正交化 The Gram–Schmidt process](#格拉姆-施密特正交化-the-gramschmidt-process)
     - [Reflecting in a plane](#reflecting-in-a-plane)
     - [特征向量和特征值 Eigenvectors and Eigenvalues](#特征向量和特征值-eigenvectors-and-eigenvalues)
-      - [改变特征 Changing the Eigenbasis](#改变特征-changing-the-eigenbasis)
+      - [特征值分解中的基变换](#特征值分解eigenvalue-decomposition中的-基变换changing-the-eigenbasis)
       - [特征值的属性](#特征值的属性)
   - [推荐阅读](#推荐阅读)
 
@@ -44,33 +46,37 @@
 
 #### 向量点积 Cosine rule
 
-_(r - s)<sup>2</sup> = r<sup>2</sup> + s<sup>2</sup> - 2r · s · cosθ_
+对于两个实向量：
+
+$$\|r-s\|^2 = \|r\|^2 + \|s\|^2 - 2r^\top s$$
+
+当两向量均非零时，$r^\top s = \|r\|\|s\|\cos\theta$。注意点积中已经包含夹角因素，不能再乘一次 $\cos\theta$。
 
 #### 投影 Projection
 
 ##### 标量投影 Scalar projection
 
-_r · s =|r| × |s| × cosθ_
+设 $r\ne 0$，$s$ 沿 $r$ 方向的有符号标量投影为：
 
+$$\operatorname{comp}_r(s)=\frac{r^\top s}{\|r\|}$$
 
-
-<img src="https://latex.codecogs.com/gif.latex?proj_r^s=\frac{r\cdot&space;s}{|r|\times|s|}" title="proj_r^s=\frac{r\cdot s}{|r|}" />
+当 $s\ne0$ 时，它也等于 $\|s\|\cos\theta$。除以两个向量的模得到的是余弦相似度，不是标量投影。
 
 > <p align="center"><img src="./img/vector-projection-r-s.png" width="300" /> </p>
 
-> 可以通过向量点乘的原理的来理解这一点，假设 _r_ 是在坐标系 _i_ 上的向量（ _r<sub>j</sub>=0_ ）。那么 _r · s = r<sub>i</sub>s<sub>i</sub> + r<sub>j</sub>s<sub>j</sub> = r<sub>i</sub>s<sub>i</sub> = |r|s<sub>i</sub>_ ，其中 _s<sub>i</sub> = |s| · cosθ_ ，所以 _r · s =|r| · |s| · cosθ_
+> 可以选择使非零向量 _r_ 沿 _i_ 轴正方向的正交坐标系，此时 _r<sub>j</sub>=0_ 且 _r<sub>i</sub>=|r|_。于是 _r · s = r<sub>i</sub>s<sub>i</sub> = |r|s<sub>i</sub>_，因此标量投影为 _s<sub>i</sub>=r · s / |r|_。
 
 ##### 向量投影 Vector projection
 
- _s_ 往 _r_ 上的投影向量如下，同样可以用上图来0解释
+_s_ 往非零向量 _r_ 上的投影向量为标量投影乘以 _r_ 的单位方向：
 
-<img src="https://latex.codecogs.com/gif.latex?proj_r^s=\frac{r\cdot&space;s}{|r|\times|s|}" title="proj_r^s=\frac{r\cdot s}{|r|\times|r|}r" />
+$$\operatorname{proj}_r(s)=\frac{r^\top s}{\|r\|^2}r$$
 
 ### 转换参考系
 
 #### 向量基变更 Vector change basis
 
-对于在坐标系 _(e<sub>1</sub>, e<sub>2</sub>)_ 上的向量 _r_，把它的坐标点映射到 _(b<sub>1</sub>,b<sub>2</sub>)_ ，_r_ 在新的坐标系中的坐标点是
+设原坐标系为标准正交基，新基向量 $b_1,b_2$ 均非零且互相正交，则向量 _r_ 在新基下的坐标可通过分别投影得到：
 
 <p align="center">
 <img src="https://latex.codecogs.com/gif.latex?\left[\frac{r\cdot&space;b_1}{|b_1|^2},\frac{r\cdot&space;b_2}{|b_2|^2}\right]^T" title="\left[\frac{r\cdot b_1}{|b_1|^2},\frac{r\cdot b_2}{|b_2|^2}\right]^T" />
@@ -83,8 +89,10 @@ _r · s =|r| × |s| × cosθ_
 
 ##### 计算 _r_ 的Python 代码
 
+以下片段仅适用于正交基。若新基只是线性无关而不正交，应令 `B = np.column_stack([b1, b2])`，用 `np.linalg.solve(B, v)` 求解 `B @ coordinates = v`。
+
 ``` python
-import numpy as np;
+import numpy as np
 def change_basis(v, b1, b2):
     return [np.dot(v, b1)/np.inner(b1,b1), (np.dot(v, b2)/np.inner(b2,b2))]
 
@@ -95,13 +103,13 @@ change_basis(v, b1, b2)
 
 ### Linear independent 线性无关
 
-如果 _r_ 和 _s_ 是线性无关的，对于任何 _α_， _r ≠ α · s_。
+_r_ 和 _s_ 线性无关，是指只有 $\alpha=\beta=0$ 才能使 $\alpha r+\beta s=0$。对于两个非零向量，这等价于其中任意一个都不能写成另一个的标量倍数；包含零向量的向量组一定线性相关。
 
 ## Matrices 矩阵
 
 ### Transformation 矩阵变换
 
-矩阵 _E=[e<sub>1</sub> e<sub>2</sub>]_ 和一个向量 _v_ 相乘可以理解为把 _v_ 在 _e<sub>1</sub>, e<sub>2</sub>_ 的坐标系上重新投影
+设矩阵 _E=[e<sub>1</sub> e<sub>2</sub>]_ 的列是用标准坐标表示的新基向量，则 _Ev_ 是按系数 _v_ 对这些基向量作线性组合，将新基下的坐标转换为标准坐标。这不是正交投影。
 
 <p align="center">
 <img src="https://latex.codecogs.com/gif.latex?\begin{bmatrix}1&0\\0&1\end{bmatrix}\cdot\begin{bmatrix}x\\y\end{bmatrix}=\begin{bmatrix}x\\y\end{bmatrix}" title="\begin{bmatrix}1&0\\0&1\end{bmatrix}\cdot\begin{bmatrix}x\\y\end{bmatrix}=\begin{bmatrix}x\\y\end{bmatrix}" />
@@ -112,7 +120,7 @@ change_basis(v, b1, b2)
 
 #### 矩阵与旋转角度 _θ_ 之间的关系
 
-转换矩阵为
+在二维标准坐标系中，对列向量做顺时针主动旋转 $\theta$ 的矩阵如下；逆时针主动旋转应将两个非对角元素的符号反过来。
 
 <p align="center">
 <img src="https://latex.codecogs.com/gif.latex?\begin{bmatrix}cos\theta&sin\theta\\-sin\theta&cos\theta\end{bmatrix}" title="\begin{bmatrix}cos\theta&sin\theta\\-sin\theta&cos\theta\end{bmatrix}" />
@@ -131,9 +139,11 @@ $$A^{-1}A = I$$
 
 ### 行列式 Determinant
 
-矩阵 _A_ 的行列式表示为 _det(A)_ 或 _|A|_ .
+矩阵 $A$ 的行列式表示为 $\det(A)$ 或 $\lvert A\rvert$。
 
-对于矩阵 <img src="https://latex.codecogs.com/gif.latex?A=\begin{bmatrix}a&b\\c&d\end{bmatrix}" title="A=\begin{bmatrix}a&b\\c&d\end{bmatrix}" />  _|A|=a d-c d_
+对于矩阵 $A=\begin{bmatrix}a&b\\c&d\end{bmatrix}$，其行列式为：
+
+$$\det(A)=ad-bc$$
 
 > <p align="center"><img src="./img/matrix-determinant.png" width="400"/></p>
 
@@ -144,7 +154,7 @@ $$A^{-1}A = I$$
 ### 矩阵乘法 Matrix multiplication
 
 <p align="center">
-<img src="https://latex.codecogs.com/gif.latex?\begin{bmatrix}a_{11}&a_{12}&\ldots&a_{1n}\\a_{21}&a_{22}&\ldots&a_{2n}\\&space;\vdots&\vdots&\ddots&\vdots\\a_{m1}&a_{m2}&\ldots&a_{mn}\end{bmatrix}&space;\cdot&space;\begin{bmatrix}&space;b_{11}&a_{12}&\ldots&b_{1p}\\b_{21}&b_{22}&&space;\ldots&b_{2p}\\&space;\vdots&\vdots&\ddots&\vdots\\b_{n1}&b_{n2}&&space;\ldots&b_{np}\end{bmatrix}=\begin{bmatrix}&space;c_{11}&c_{12}&\ldots&c_{1p}\\c_{21}&c_{22}&&space;\ldots&c_{2p}\\&space;\vdots&\vdots&\ddots&\vdots\\c_{m1}&c_{m2}&space;&\ldots&c_{mp}\end{bmatrix}" title="\begin{bmatrix}a_{11}&a_{12}&\ldots&a_{1n}\\a_{21}&a_{22}& \ldots&a_{2n}\\ \vdots&\vdots&\ddots&\vdots\\a_{m1}&a_{m2}& \ldots&a_{mn}\end{bmatrix} \cdot \begin{bmatrix} b_{11}&a_{12}&\ldots&b_{1p}\\b_{21}&b_{22}& \ldots&b_{2p}\\ \vdots&\vdots&\ddots&\vdots\\b_{n1}&b_{n2}& \ldots&b_{np}\end{bmatrix} =\begin{bmatrix} c_{11}&c_{12}&\ldots&c_{1p}\\c_{21}&c_{22}& \ldots&c_{2p}\\ \vdots&\vdots&\ddots&\vdots\\c_{m1}&c_{m2} &\ldots&c_{mp}\end{bmatrix}" />
+<img src="https://latex.codecogs.com/gif.latex?\begin{bmatrix}a_{11}&a_{12}&\ldots&a_{1n}\\a_{21}&a_{22}&\ldots&a_{2n}\\&space;\vdots&\vdots&\ddots&\vdots\\a_{m1}&a_{m2}&\ldots&a_{mn}\end{bmatrix}&space;\cdot&space;\begin{bmatrix}&space;b_{11}&b_{12}&\ldots&b_{1p}\\b_{21}&b_{22}&&space;\ldots&b_{2p}\\&space;\vdots&\vdots&\ddots&\vdots\\b_{n1}&b_{n2}&&space;\ldots&b_{np}\end{bmatrix}=\begin{bmatrix}&space;c_{11}&c_{12}&\ldots&c_{1p}\\c_{21}&c_{22}&&space;\ldots&c_{2p}\\&space;\vdots&\vdots&\ddots&\vdots\\c_{m1}&c_{m2}&space;&\ldots&c_{mp}\end{bmatrix}" title="\begin{bmatrix}a_{11}&a_{12}&\ldots&a_{1n}\\a_{21}&a_{22}& \ldots&a_{2n}\\ \vdots&\vdots&\ddots&\vdots\\a_{m1}&a_{m2}& \ldots&a_{mn}\end{bmatrix} \cdot \begin{bmatrix} b_{11}&b_{12}&\ldots&b_{1p}\\b_{21}&b_{22}& \ldots&b_{2p}\\ \vdots&\vdots&\ddots&\vdots\\b_{n1}&b_{n2}& \ldots&b_{np}\end{bmatrix} =\begin{bmatrix} c_{11}&c_{12}&\ldots&c_{1p}\\c_{21}&c_{22}& \ldots&c_{2p}\\ \vdots&\vdots&\ddots&\vdots\\c_{m1}&c_{m2} &\ldots&c_{mp}\end{bmatrix}" />
 </p>
 
 
@@ -155,9 +165,7 @@ $$A^{-1}A = I$$
 
 ### 矩阵基变更 Matrices changing basis
 
-对于矩阵 _A_ 和 _B_ , _A · B_ 可以认为是把 _B_ 的坐标系变换到 _A_ 中。
-
-Transform (rotate) _R_ in _B_'s coordinates:  _B<sup>-1</sup>RB_
+一般的矩阵乘积 _AB_ 表示先应用 _B_ 再应用 _A_，不自动等于某种基变换。若 _B_ 的列为新基在原坐标系中的表示、且 _B_ 可逆，则原坐标系下的线性变换 _R_ 在新基下表示为 _B<sup>-1</sup>RB_。
 
 > <p align="center"><img src="./img/transformation-in-a-changed-basis.png" width="300"/></p>
 
@@ -169,7 +177,7 @@ Transform (rotate) _R_ in _B_'s coordinates:  _B<sup>-1</sup>RB_
 
 ### 格拉姆-施密特正交化 The Gram–Schmidt process
 
-如果内积空间上的一组向量能够组成一个子空间，那么这一组向量就称为这个子空间的一个基。Gram－Schmidt正交化提供了一种方法，能够通过这一子空间上的一个基得出子空间的一个正交基，并可进一步求出对应的标准正交基。
+一组向量只有同时满足线性无关并张成目标子空间，才是该子空间的一组基。Gram–Schmidt 正交化可将这组基变为张成同一子空间的正交基，再通过归一化得到标准正交基。
 
 Gram-Schmidt 正交化过程，它是一个用于将一组向量转化为一组正交（且可能是单位正交）向量的数学方法。简而言之，它提供了通过正交化将一组线性无关的向量转换为正交基的方法
 <img src="https://github.com/user-attachments/assets/fed941b6-ab96-4ec6-9e1f-8abdfa7ed17e" />
@@ -177,7 +185,7 @@ Gram-Schmidt 正交化过程，它是一个用于将一组向量转化为一组�
 
 
 
-经过上述过程后，对于任何 _i, j_ ， _β<sub>i</sub> β<sub>j</sub> = 0_ 。（在经过正交化过程后，所有得到的正交基向量之间的点积（内积）为零，意味着它们是正交的。）
+经过上述过程后，对于 $i\ne j$，有 $\beta_i^\top\beta_j=0$。当 $i=j$ 时，内积是向量模长的平方；若已归一化，则等于 1。
 
 ### Reflecting in a plane
 
@@ -200,7 +208,7 @@ Gram-Schmidt 正交化过程，它是一个用于将一组向量转化为一组�
 >
 > 在上面这个图像变换的例子中，红色箭头改变方向，但蓝色箭头不改变方向。蓝色箭头是此剪切映射的特征向量，因为它不会改变方向，并且由于其长度不变，因此其特征值为1。
 
-根据线性方程组理论，为了使这个方程有非零解，矩阵 _A_ 的行列式  _det(A - λI)=0_ 必须是零。
+根据线性方程组理论，为了使这个方程有非零解，必须满足 _det(A - λI)=0_；这里取行列式的是 _A - λI_。
 
 例如，矩阵 _A_ 为<img src="https://latex.codecogs.com/gif.latex?\begin{pmatrix}&space;a&space;&&space;b&space;\\&space;c&space;&&space;d&space;\end{pmatrix}" title="\begin{pmatrix} a & b \\ c & d \end{pmatrix}" />，那么
 
@@ -215,14 +223,16 @@ _λ<sup>2</sup>-(a+d)λ+ad-bc=0_ ，得到 _λ_ 并计算特征向量。
 
 <img src="https://github.com/user-attachments/assets/83446c00-7869-4cfd-967b-2835222f5619" />
 
-<p align="center">
-<img src="https://latex.codecogs.com/gif.latex?\begin{align*}&space;C&=\begin{pmatrix}x_1&x_2&x_3\\&space;\vdots&\vdots&\vdots\end{pmatrix},&space;D=\begin{pmatrix}\lambda_1&0&0\\0&\lambda_2&0\\0&0&\lambda_3\end{pmatrix},&space;T^n=\begin{pmatrix}a^n&0&0\\0&b^n&0\\0&0&c^n\end{pmatrix}\\&space;T&=CDC^{-1}\\&space;T^2&=CDC^{-1}CDC^{-1}=CD^2C^{-1}\\&space;T^n&=CD^nC^{-1}&space;\end{align*}" title="\begin{align*} C&=\begin{pmatrix}x_1&x_2&x_3\\ \vdots&\vdots&\vdots\end{pmatrix}, D=\begin{pmatrix}\lambda_1&0&0\\0&\lambda_2&0\\0&0&\lambda_3\end{pmatrix}, T^n=\begin{pmatrix}a^n&0&0\\0&b^n&0\\0&0&c^n\end{pmatrix}\\ T&=CDC^{-1}\\ T^2&=CDC^{-1}CDC^{-1}=CD^2C^{-1}\\ T^n&=CD^nC^{-1} \end{align*}" />
-</p>
+若 $T$ 有一组线性无关的特征向量，将它们作为 $C$ 的列，并令 $D$ 为对应特征值构成的对角矩阵，则：
+
+$$T=CDC^{-1},\qquad T^n=CD^nC^{-1}$$
+
+其中 $D^n=\operatorname{diag}(\lambda_1^n,\ldots,\lambda_m^n)$（$n$ 为正整数）。只有在这组特征向量能构成基、即 $C$ 可逆时，才能使用这个对角化表达式。
 
 
 <p align="center"><img src="./img/Eigenbasis-example.png" width="300"/></p>
 
-其中，_C_ 是**特征向量**(eigenvectors)，$D$由**特征值**(eigenvalues)构成.
+其中，_C_ 是以线性无关特征向量为列的矩阵，$D$ 是对应特征值构成的对角矩阵。
 <img src="https://github.com/user-attachments/assets/f92e1ab7-2ef8-462a-92b8-b82431874699" />
 
 一个例子：
@@ -237,7 +247,7 @@ _λ<sup>2</sup>-(a+d)λ+ad-bc=0_ ，得到 _λ_ 并计算特征向量。
 如 _λ_ 为 _A_ 的特征值， _x_ 是 _A_ 的属于 _λ_ 的特征向量：
 
 * _λ_ 也是 _A<sup>T</sup>_ 的特征值；
-* _λ<sup>m</sup>_ 也是 _A<sup>m</sup>_ 的特征值（m是任意常数）；
+* 对正整数 _m_，_λ<sup>m</sup>_ 是 _A<sup>m</sup>_ 的特征值；若 _A_ 可逆，也可扩展到负整数幂。一般分数幂需另定义矩阵函数，不能直接称 _m_ 为任意常数；
 * _A_ 可逆时，_λ<sup>-1</sup>_ 是 _A<sup>-1</sup>_ 的特征值；
 
 ## 推荐阅读
@@ -250,4 +260,4 @@ _λ<sup>2</sup>-(a+d)λ+ad-bc=0_ ，得到 _λ_ 并计算特征向量。
 
 4. [强大的矩阵奇异值分解(SVD)及其应用](https://www.cnblogs.com/LeftNotEasy/archive/2011/01/19/svd-and-applications.html)
 
-[回到顶部](#linear-algebra-线性代数)
+[回到顶部](#线性代数-linear-algebra)

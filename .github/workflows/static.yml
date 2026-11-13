@@ -38,8 +38,28 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check content and offline behavior before deploying
+        run: |
+          python3 tools/check_local_links.py
+          python3 -m unittest discover -s tests -v
+          for script in assets/js/*.js; do node --check "$script"; done
+          node --test tests/test_site_search.cjs
+
       - name: Build with Jekyll
-        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+        run: |
+          ruby tests/test_inline_math.rb
+          bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+
+      - name: Validate generated links and search index
+        run: python3 tools/check_site.py --site _site --baseurl "${{ steps.pages.outputs.base_path }}"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
